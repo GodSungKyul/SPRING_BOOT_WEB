@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>블로그 게시판</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+<h1 class="mt-5 text-danger">블로그게시판-잘못된접근</h1>
+<!--오류메시지-->
+<div class="alert alert-danger mt-4" role="alert">
+<h4 class="alert-heading">잘못된게시판접근입니다!</h4>
+<p>요청하신게시글을찾을수없거나, 접근권한이없습니다.</p>
+<hr>
+<p class="mb-0">이전페이지로돌아가시려면아래버튼을클릭해주세요.</p>
+</div>
+<!--이전페이지로돌아가는버튼-->
+<div class="mt-4">
+<a href="javascript:history.back()" class="btn btn-primary">이전페이지로</a>
+</div>
+</div>
+</body>
+</html>
+

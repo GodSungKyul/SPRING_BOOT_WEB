@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>thymeleaf 페이지</title>
+</head>
+<body>
+    <h1>안녕하세요!</h1>
+    <p th:text="${data}"></p>
+    <a href="/">홈페이지 메인</a>
+    <span th:utext="${data1}">message</span>
+
+    <input type="text" th:value="${data2}">
+    <input type="checkbox" th:field="*{data2}" th:value="true"> 동의합니다.
+
+    <!-- 글 상세보기 링크 -->
+    <p><a th:href="@{/posts/{id}(id=${link})}">글 상세보기</a></p>
+
+    <p>리스트에서 처음 사람의 이름 = <span th:text="${name}"></span></p>
+    
+    <!-- 상품 상세보기 링크 -->
+    <p><a th:href="@{/products/detail(productId=${para1})}">상품 상세보기</a></p>
+    
+</body>
+</html>
