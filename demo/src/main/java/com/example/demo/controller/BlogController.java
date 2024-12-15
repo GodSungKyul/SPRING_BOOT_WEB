@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.domain.Article;
+import com.example.demo.model.domain.Board;
 import com.example.demo.model.service.AddArticleRequest;
 import com.example.demo.model.service.BlogService;
 import lombok.RequiredArgsConstructor;
@@ -18,51 +19,58 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequiredArgsConstructor
 public class BlogController {
 
     @Autowired
     BlogService blogService; 
 
-    @GetMapping("/article_list")
-    public String getArticles(Model model) {
-        List<Article> articles = blogService.findAll();
-        model.addAttribute("articles", articles);
-        return "article_list";  // article_list 페이지로 이동
+    // 기존 코드는 유지하고 필요한 새로운 맵핑만 추가
+
+    // 게시판 상세 보기 (board_view.html)
+    @GetMapping("/board_view/{id}")
+    public String boardView(Model model, @PathVariable Long id) {
+        Optional<Board> board = blogService.findById(id); // 게시판 글 조회
+
+        if (board.isPresent()) {
+            model.addAttribute("boards", board.get()); // 조회한 게시글을 모델에 추가
+        } else {
+            // 처리 로직 추가: 게시글이 없을 경우 오류 페이지 반환
+            return "/error_page/article_error";
+        }
+        return "board_view"; // board_view.html 연결
     }
 
-    // GET 요청으로 게시글 추가 (GET 요청으로 변경)
+    // 게시판 리스트 보기 (board_list.html)
+    @GetMapping("/board_list")
+    public String boardList(Model model) {
+        List<Board> list = blogService.findAllBoard(); // 모든 게시판 글 조회
+        model.addAttribute("boards", list); // 모델에 게시판 데이터 추가
+        return "board_list"; // board_list.html로 이동
+    }
+
+    // 게시글 추가 맵핑 예시
     @GetMapping("/api/articles")
     public String addArticle(AddArticleRequest request, Model model) {
         blogService.save(request);
-        return "redirect:/article_list";  // 게시글 추가 후 목록 페이지로 리다이렉트
+        return "redirect:/article_list"; // 게시글 추가 후 목록 페이지로 이동
     }
 
-    @PutMapping("/api/article_edit/{id}")
- public String updateArticle(@PathVariable Long id, @ModelAttribute AddArticleRequest request) {
- blogService.update(id, request);
- return "redirect:/article_list"; // 글 수정 이후 .html 연결
+    // 게시글 삭제
+    @DeleteMapping("/api/article_delete/{id}")
+    public String deleteArticle(@PathVariable Long id) {
+        blogService.delete(id);
+        return "redirect:/article_list";
+    }
+
+    // 게시글 수정
+    @GetMapping("/article_edit/{id}")
+    public String articleEdit(Model model, @PathVariable Long id) {
+        Optional<Article> list = blogService.findById(id);
+        if (list.isPresent()) {
+            model.addAttribute("article", list.get());
+        } else {
+            return "/error_page/article_error";
+        }
+        return "article_edit";
+    }
 }
-
-@DeleteMapping("/api/article_delete/{id}")
- public String deleteArticle(@PathVariable Long id) {
- blogService.delete(id);
- return "redirect:/article_list";
- }
-
- @GetMapping("/article_edit/{id}") // 게시판링크지정
- public String article_edit(Model model, @PathVariable Long id) {
-     Optional<Article> list = blogService.findById(id); // 선택한게시판글
-     if (list.isPresent()) {
-         model.addAttribute("article", list.get()); // 존재하면 Article 객체를 모델에 추가
-     } else {
-         // 처리할 로직 추가(예: 오류 페이지로 리다이렉트, 예외 처리 등)
-         return "/error_page/article_error"; //  오류 처리 페이지로 연결(이름 수정됨)
-     }
-     return "article_edit"; // article_edit.html 페이지 반환
- }
-     }
- 
-
-
-
