@@ -9,10 +9,14 @@ import com.example.demo.model.domain.Article;
 public class AddArticleRequest {
     private String title;
     private String content;
+    private String user;
+    private String newdate;
+    private String count;
+    private String likec;
 
     // DTO를 Article 엔티티로 변환하는 메서드
-    public Article toEntity() { 
-        return Article.builder()
+    public Board toEntity() { 
+        return Board.builder()
             .title(title)
             .content(content)
             .build();

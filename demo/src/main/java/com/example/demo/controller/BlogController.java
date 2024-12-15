@@ -7,6 +7,8 @@ import com.example.demo.model.service.BlogService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +26,6 @@ public class BlogController {
 
     @Autowired
     BlogService blogService; 
-
-    // 기존 코드는 유지하고 필요한 새로운 맵핑만 추가
 
     // 게시판 상세 보기 (board_view.html)
     @GetMapping("/board_view/{id}")
@@ -40,12 +41,23 @@ public class BlogController {
         return "board_view"; // board_view.html 연결
     }
 
-    // 게시판 리스트 보기 (board_list.html)
-    @GetMapping("/board_list")
-    public String boardList(Model model) {
-        List<Board> list = blogService.findAllBoard(); // 모든 게시판 글 조회
-        model.addAttribute("boards", list); // 모델에 게시판 데이터 추가
-        return "board_list"; // board_list.html로 이동
+    // 게시판 리스트 보기 (board_list.html) - 수정된 부분
+    @GetMapping("/board_list") // 새로운 게시판 링크 지정
+    public String boardList(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String keyword) {
+        PageRequest pageable = PageRequest.of(page, 3); // 한 페이지의 게시글 수
+        Page<Board> list; // Page를 반환
+        
+        if (keyword.isEmpty()) {
+            list = blogService.findAll(pageable); // 기본 전체 출력(키워드 x)
+        } else {
+            list = blogService.searchByKeyword(keyword, pageable); // 키워드로 검색
+        }
+        
+        model.addAttribute("boards", list); // 모델에 추가
+        model.addAttribute("totalPages", list.getTotalPages()); // 페이지 크기
+        model.addAttribute("currentPage", page); // 페이지 번호
+        model.addAttribute("keyword", keyword); // 키워드
+        return "board_list"; // .HTML 연결
     }
 
     // 게시글 추가 맵핑 예시
@@ -72,5 +84,10 @@ public class BlogController {
             return "/error_page/article_error";
         }
         return "article_edit";
+    }
+
+    @GetMapping("/board_write")
+    public String board_write() {
+        return "board_write";
     }
 }
